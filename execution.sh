@@ -1,0 +1,1 @@
+python main.py --filename ratings.csv --model TransFM --features none --features_file none --max_iters 1000000 --num_dims 10 --linear_reg 10.0 --emb_reg 1.0 --trans_reg 0.1 --init_mean 0.1 --starting_lr 0.02 --lr_decay_factor 1.0 --lr_decay_freq 1000 --eval_freq 50 --quit_delta 1000

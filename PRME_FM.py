@@ -9,14 +9,14 @@ import sys
 
 class PRME_FM:
     def __init__(self, dataset, args):
-        print 'In class PRME_FM'
+        print('In class PRME_FM')
         self.dataset = dataset
         self.args = args
 
         # Use a training batch to figure out feature dimensionality
         users, pos_feats, neg_feats = self.dataset.generate_train_batch_sp()
         self.feature_dim = pos_feats.shape[1]
-        print 'Feature dimension = ' + str(self.feature_dim)
+        print('Feature dimension = ' + str(self.feature_dim))
 
     def get_preds(self, var_linear, var_emb_factors,
             sparse_pos_feats, sparse_neg_feats):
@@ -163,14 +163,14 @@ class PRME_FM:
             best_val_auc = -1
             best_test_auc = -1
 
-            for epoch in xrange(self.args.max_iters):
-                print 'Epoch: {}'.format(epoch),
+            for epoch in range(self.args.max_iters):
+                print('Epoch: {}'.format(epoch), end=' ')
                 users, pos_feats, neg_feats = self.dataset.generate_train_batch_sp()
                 feed_dict = self.create_feed_dict(placeholders, users, pos_feats, neg_feats)
                 loss, train_auc, l2, lr, _ = sess.run(
                     [bprloss_op, auc_op, l2_reg, optimizer._lr, train_op],
                     feed_dict = feed_dict)
-                print '\tLoss = {}'.format(loss)
+                print('\tLoss = {}'.format(loss))
 
                 if epoch % self.args.eval_freq == 0:
                     users, pos_feats, neg_feats = self.dataset.generate_val_batch_sp()
@@ -181,7 +181,7 @@ class PRME_FM:
                     feed_dict = self.create_feed_dict(placeholders, users, pos_feats, neg_feats)
                     test_auc = sess.run(auc_op, feed_dict = feed_dict)
 
-                    print '\tVal AUC = ' + str(val_auc) + '\tTest AUC = ' + str(test_auc)
+                    print('\tVal AUC = ' + str(val_auc) + '\tTest AUC = ' + str(test_auc))
 
                     if val_auc > best_val_auc:
                         best_epoch = epoch
@@ -189,14 +189,14 @@ class PRME_FM:
                         best_test_auc = test_auc
                     else:
                         if epoch >= (best_epoch + self.args.quit_delta):
-                            print 'Overfitted, exiting...'
-                            print '\tBest Epoch = {}'.format(best_epoch)
-                            print '\tValidation AUC = {}'.format(best_val_auc)
-                            print '\tTest AUC = {}'.format(best_test_auc)
+                            print('Overfitted, exiting...')
+                            print('\tBest Epoch = {}'.format(best_epoch))
+                            print('\tValidation AUC = {}'.format(best_val_auc))
+                            print('\tTest AUC = {}'.format(best_test_auc))
                             break
 
-                    print '\tCurrent max = {} at epoch {}'.format(
-                            best_val_auc, best_epoch)
+                    print('\tCurrent max = {} at epoch {}'.format(
+                            best_val_auc, best_epoch))
 
         return (best_val_auc, best_test_auc)
 

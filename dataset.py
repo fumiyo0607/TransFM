@@ -12,41 +12,41 @@ class Dataset:
         self.item_min = item_min
         self.args = args
 
-        df = pd.read_csv(path, sep=' ', header=None,
+        df = pd.read_csv(path, sep=',', header=None,
                 names=['user_id', 'item_id', 'rating', 'time'], index_col=False)
 
-        print 'First pass'
-        print '\tnum_users = ' + str(len(df['user_id'].unique()))
-        print '\tnum_items = ' + str(len(df['item_id'].unique()))
-        print '\tdf_shape  = ' + str(df.shape)
+        print('First pass')
+        print('\tnum_users = ' + str(len(df['user_id'].unique())))
+        print('\tnum_items = ' + str(len(df['item_id'].unique())))
+        print('\tdf_shape  = ' + str(df.shape))
 
         user_counts = df['user_id'].value_counts()
-        print 'Collected user counts...'
+        print('Collected user counts...')
         item_counts = df['item_id'].value_counts()
-        print 'Collected item counts...'
+        print('Collected item counts...')
 
         # Filter based on user and item counts
         df = df[df.apply(
             lambda x: user_counts[x['user_id']] >= user_min, axis=1)]
-        print 'User filtering done...'
+        print('User filtering done...')
         df = df[df.apply(
             lambda x: item_counts[x['item_id']] >= item_min, axis=1)]
-        print 'Item filtering done...'
+        print('Item filtering done...')
 
-        print 'Second pass'
-        print '\tnum_users = ' + str(len(df['user_id'].unique()))
-        print '\tnum_items = ' + str(len(df['item_id'].unique()))
-        print '\tdf_shape  = ' + str(df.shape)
+        print('Second pass')
+        print('\tnum_users = ' + str(len(df['user_id'].unique())))
+        print('\tnum_items = ' + str(len(df['item_id'].unique())))
+        print('\tdf_shape  = ' + str(df.shape))
 
         # Normalize temporal values
-        print 'Normalizing temporal values...'
+        print('Normalizing temporal values...')
         mean = df['time'].mean()
         std  = df['time'].std()
         self.ONE_YEAR = (60 * 60 * 24 * 365) / mean
         self.ONE_DAY = (60 * 60 * 24) / mean
         df['time'] = (df['time'] - mean) / std
 
-        print 'Constructing datasets...'
+        print('Constructing datasets...')
         training_set = defaultdict(list)
         # Start counting users and items at 1 to facilitate sparse matrix
         # computation.
@@ -101,7 +101,7 @@ class Dataset:
 
             # Separate timestamps and create item set
             training_times[user] = copy.deepcopy(training_set[user])
-            training_set[user] = map(lambda x: x[0], training_set[user])
+            training_set[user] = [x[0] for x in training_set[user]]
             item_set_per_user[user] = set(training_set[user])
 
         num_train_events = 0
@@ -147,7 +147,7 @@ class Dataset:
 
         # Read user/item content info
         if self.args.features == 'content':
-            print 'Reading user demographics...'
+            print('Reading user demographics...')
             user_df = pd.read_csv(self.args.features_file.split(',')[0])
             user_df = user_df.set_index('idx')
             self.user_df = user_df
@@ -157,7 +157,7 @@ class Dataset:
                 self.orig_indices.append(self.idx_to_user[i])
             self.user_feats = sp.csr_matrix(user_df.loc[self.orig_indices].values)
 
-            print 'Reading item demographics...'
+            print('Reading item demographics...')
             item_df = pd.read_csv(self.args.features_file.split(',')[1])
             item_df = item_df.set_index('idx')
             self.item_df = item_df
@@ -172,7 +172,7 @@ class Dataset:
 
         # Read geographical content info
         if self.args.features == 'geo':
-            print 'Reading geographical features...'
+            print('Reading geographical features...')
 
             geo_df = pd.read_csv(self.args.features_file)
             geo_df = geo_df.set_index('place_id')

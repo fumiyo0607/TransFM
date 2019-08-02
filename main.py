@@ -87,12 +87,14 @@ def train_transrec(dataset, args):
     elif args.model == 'HRM-FM':
         model = HRM_FM.HRM_FM(dataset, args)
 
-    val_auc, test_auc = model.train()
+    val_auc, test_auc,  var_emb_factors, var_trans_factors = model.train()
 
     print('')
     print(args)
     print('Validation AUC  = ' + str(val_auc))
     print('Test AUC        = ' + str(test_auc))
+    print(var_emb_factors)
+    print(var_trans_factors)
 
 if __name__ == '__main__':
     args = parse_args()

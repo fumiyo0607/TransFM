@@ -174,7 +174,7 @@ class TransFM:
         self.var_linear = var_linear
         self.var_emb_factors = var_emb_factors
         self.var_trans_factors = var_trans_factors
-        return (g, bprloss_op, optimizer, train_op, auc_op, l2_reg, placeholders)
+        return (g, bprloss_op, optimizer, train_op, auc_op, l2_reg, placeholders, var_emb_factors, var_trans_factors)
 
     def create_feed_dict(self, placeholders, users, pos_feats, neg_feats):
         feed_dict = {
@@ -196,8 +196,16 @@ class TransFM:
         return feed_dict
 
     def train(self):
-        (g, bprloss_op, optimizer, train_op, auc_op, l2_reg,
-                placeholders) = self.create_model()
+        ( g, 
+          bprloss_op, 
+          optimizer, 
+          train_op, 
+          auc_op, 
+          l2_reg,
+          placeholders, 
+          var_emb_factors, 
+          var_trans_factors
+        ) = self.create_model()
 
         with g.as_default():
             sess = tf.Session()
@@ -231,6 +239,8 @@ class TransFM:
                         best_epoch = epoch
                         best_val_auc = val_auc
                         best_test_auc = test_auc
+                        best_var_emb_factors = var_emb_factors
+                        best_var_trans_factors = var_trans_factors
                     else:
                         if epoch >= (best_epoch + self.args.quit_delta):
                             print('Overfitted, exiting...')
@@ -242,5 +252,5 @@ class TransFM:
                     print('\tCurrent max = {} at epoch {}'.format(
                             best_val_auc, best_epoch))
 
-        return (best_val_auc, best_test_auc)
+        return (best_val_auc, best_test_auc, best_var_emb_factors, best_var_trans_factors)
 

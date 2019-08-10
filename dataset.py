@@ -15,6 +15,8 @@ class Dataset:
         df = pd.read_csv(path, sep=',', header=None,
                 names=['user_id', 'item_id', 'rating', 'time'], index_col=False)
 
+        # df = df[1:3000]
+
         print('First pass')
         print('\tnum_users = ' + str(len(df['user_id'].unique())))
         print('\tnum_items = ' + str(len(df['item_id'].unique())))
@@ -43,7 +45,7 @@ class Dataset:
         mean = df['time'].mean()
         std  = df['time'].std()
         self.ONE_YEAR = (60 * 60 * 24 * 365) / mean
-        self.ONE_DAY = (60 * 60 * 24) / mean
+        self.ONE_DAY  = (60 * 60 * 24) / mean
         df['time'] = (df['time'] - mean) / std
 
         print('Constructing datasets...')
@@ -86,22 +88,22 @@ class Dataset:
         for user in training_set:
             if len(training_set[user]) < 3:
                 # Reviewed < 3 items, insert dummy values
-                test_set[user] = (-1, -1)
+                test_set[user]   = (-1, -1)
                 test_times[user] = (-1, -1)
-                val_set[user] = (-1, -1)
-                val_times[user] = (-1, -1)
+                val_set[user]    = (-1, -1)
+                val_times[user]  = (-1, -1)
             else:
                 test_item, test_time = training_set[user].pop()
-                val_item, val_time = training_set[user].pop()
+                val_item, val_time   = training_set[user].pop()
                 last_item, last_time = training_set[user][-1]
-                test_set[user] = (test_item, val_item)
-                test_times[user] = (test_time, val_time)
-                val_set[user] = (val_item, last_item)
-                val_times[user] = (val_time, last_time)
+                test_set[user]       = (test_item, val_item)
+                test_times[user]     = (test_time, val_time)
+                val_set[user]        = (val_item, last_item)
+                val_times[user]      = (val_time, last_time)
 
             # Separate timestamps and create item set
-            training_times[user] = copy.deepcopy(training_set[user])
-            training_set[user] = [x[0] for x in training_set[user]]
+            training_times[user]    = copy.deepcopy(training_set[user])
+            training_set[user]      = [x[0] for x in training_set[user]]
             item_set_per_user[user] = set(training_set[user])
 
         num_train_events = 0

@@ -252,5 +252,5 @@ class TransFM:
                     print('\tCurrent max = {} at epoch {}'.format(
                             best_val_auc, best_epoch))
 
-        return (best_val_auc, best_test_auc, best_var_emb_factors, best_var_trans_factors)
+        return (best_val_auc, best_test_auc, best_var_emb_factors, best_var_trans_factors, g)
 
